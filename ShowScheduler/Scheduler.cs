@@ -11,6 +11,9 @@ namespace ShowScheduler
     /// </summary>
     class Scheduler
     {
+        public int WEEK = 7;
+        public int SLOTS = 15;
+
         public Show[,] Schedule { get; private set; }
 
         private List<Show> shows;
@@ -33,23 +36,11 @@ namespace ShowScheduler
         /// </summary>
         public void Generate()
         {
-            while (shows.Count > 0)
+            for (int w = 0; w < WEEK; w++)
             {
-                int pref = 0;
-                int[] slot = getSlot(pref, shows[0]);
-                if (Schedule[slot[0], slot[1]] == null)
+                for (int s = 0; s < SLOTS; s++)
                 {
-                    Schedule[slot[0], slot[1]] = shows[0];
-                    if (shows[0].TwoHour)
-                    {
-                        shows.RemoveAt(0);
-                        Schedule[slot[0], slot[1] + 1] = shows[0];
-                    }
-                    shows.RemoveAt(0);
-                }
-                else
-                {
-
+                    Schedule[w, s] = Show.getShowForSlot(shows, w, s);
                 }
             }
         }
@@ -62,7 +53,7 @@ namespace ShowScheduler
         /// <returns></returns>
         private int[] getSlot(int pref, Show show)
         {
-            return new int[] { show.getTime(pref) - 9, show.getDay(pref) };
+            return new int[] { show.getTime() - 9, show.getDay() };
         }
     }
 }

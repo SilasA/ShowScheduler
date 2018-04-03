@@ -33,6 +33,11 @@ namespace ShowScheduler
         /// </summary>
         private int tenure;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private int prefSlot;
+
         // time from 10 to 23
         private List<int> times;
         // day from 0 to 6 (0 monday)
@@ -50,6 +55,7 @@ namespace ShowScheduler
             this.tenure = tenure;
             this.times = time;
             this.days = day;
+            this.prefSlot = 0;
             TwoHour = twoHour;
             Dummy = false;
             Parent = null;
@@ -66,7 +72,28 @@ namespace ShowScheduler
             TwoHour = true;
         }
 
-        #region Accessors
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            return ((Show)obj).getName() == getName();
+        }
+
+        #region Accessors/Mutators
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void nextPref() { prefSlot++; } // Handle rollover
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public int getPrefSlot() { return prefSlot; }
 
         /// <summary>
         /// 
@@ -91,25 +118,23 @@ namespace ShowScheduler
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="rank">Preference of time (0 being preferred)</param>
-        /// <exception cref="IndexOutOfRangeException"></exception>
         /// <returns></returns>
-        public int getTime(int rank)
+        public int getTime()
         {
-            if (Dummy) return Parent.times[rank];
-            return times[rank];
+            if (prefSlot > 3) return -1;
+            if (Dummy) return Parent.times[prefSlot];
+            return times[prefSlot];
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="rank">Preference of time (0 being preferred)</param>
-        /// <exception cref="IndexOutOfRangeException"></exception>
         /// <returns></returns>
-        public int getDay(int rank)
+        public int getDay()
         {
-            if (Dummy) return Parent.days[rank];
-            return days[rank];
+            if (prefSlot > 3) return -1;
+            if (Dummy) return Parent.days[prefSlot];
+            return days[prefSlot];
         }
 
         #endregion
@@ -121,6 +146,33 @@ namespace ShowScheduler
         public static List<Show> getShows()
         {
             return new List<Show>();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="shows"></param>
+        /// <param name="day"></param>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public static Show getShowForSlot(List<Show> shows, int day, int slot)
+        {
+            List<Show> matches = new List<Show>();
+            foreach (Show s in shows)
+            {
+                if (s.getDay() == day && s.getTime() == slot)
+                {
+                    matches.Add(s);
+                }
+            }
+            matches.Sort((Show x, Show y) => y.getTenure() - x.getTenure());
+
+            for (int i = 1; i < matches.Count; i++)
+                matches[i].nextPref();
+
+            shows.Remove(matches[0]);
+
+            return matches[0];
         }
     }
 }
