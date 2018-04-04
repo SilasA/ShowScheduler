@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ShowScheduler
+namespace ShowScheduler.GUI
 {
-    public partial class Form1 : Form
+    public partial class Schedule : Form
     {
-        public Form1()
+        public Schedule()
         {
             InitializeComponent();
         }

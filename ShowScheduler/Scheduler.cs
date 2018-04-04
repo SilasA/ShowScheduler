@@ -18,6 +18,8 @@ namespace ShowScheduler
 
         private List<Show> shows;
 
+        private bool hasConflict = false;
+
         /// <summary>
         /// 
         /// </summary>
@@ -36,15 +38,27 @@ namespace ShowScheduler
         /// </summary>
         public void Generate()
         {
+            int timeoutCount = 0;
+
             while (shows.Count > 0)
             {
                 for (int w = 0; w < WEEK; w++)
                 {
                     for (int s = 0; s < SLOTS; s++)
                     {
-                        Schedule[w, s] = Show.getShowForSlot(shows, w, s);
+                        Show show = Show.getShowForSlot(shows, w, s);
+                        if (show != null)
+                        {
+                            Schedule[w, s] = Show.getShowForSlot(shows, w, s);
+
+                        }
+                        else
+                            timeoutCount++;
                     }
                 }
+                if (timeoutCount >= WEEK * SLOTS)
+                    hasConflict = true; // have list added to generated schedule for manual scheduling
+                else timeoutCount = 0;
             }
         }
 
