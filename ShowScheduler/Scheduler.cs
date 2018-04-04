@@ -36,11 +36,14 @@ namespace ShowScheduler
         /// </summary>
         public void Generate()
         {
-            for (int w = 0; w < WEEK; w++)
+            while (shows.Count > 0)
             {
-                for (int s = 0; s < SLOTS; s++)
+                for (int w = 0; w < WEEK; w++)
                 {
-                    Schedule[w, s] = Show.getShowForSlot(shows, w, s);
+                    for (int s = 0; s < SLOTS; s++)
+                    {
+                        Schedule[w, s] = Show.getShowForSlot(shows, w, s);
+                    }
                 }
             }
         }
