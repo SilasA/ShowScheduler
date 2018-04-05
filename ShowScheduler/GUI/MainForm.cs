@@ -12,6 +12,8 @@ namespace ShowScheduler
 {
     public partial class MainForm : Form
     {
+        Scheduler scheduler = new Scheduler();
+
         public MainForm()
         {
             InitializeComponent();
@@ -35,6 +37,11 @@ namespace ShowScheduler
         private void tutorialToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            scheduler.ShowGenerated();
         }
     }
 }

@@ -6,7 +6,7 @@ namespace ShowScheduler
     /// <summary>
     /// 
     /// </summary>
-    class Show
+    public class Show
     {
         /// <summary>
         /// If the show is a 2 hour show
@@ -77,10 +77,11 @@ namespace ShowScheduler
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(object obj)
+        /*public override bool Equals(Show obj)
         {
-            return ((Show)obj).getName() == getName();
-        }
+            if (obj == null) return false;
+            return ((Show)obj)?.getName() == getName();
+        }*/
 
         #region Accessors/Mutators
 
