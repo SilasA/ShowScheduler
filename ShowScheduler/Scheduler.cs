@@ -18,6 +18,7 @@ namespace ShowScheduler
         public Show[,] Schedule { get; private set; }
 
         private List<Show> shows;
+        private List<Show> conflicts;
 
         private bool hasConflict = false;
 
@@ -32,6 +33,7 @@ namespace ShowScheduler
             Schedule = new Show[7, 15]; // col x row
 
             shows = Show.GetShows();
+            conflicts = new List<Show>();
         }
 
         /// <summary>
@@ -39,31 +41,38 @@ namespace ShowScheduler
         /// </summary>
         public void Generate()
         {
-            int timeoutCount = 0;
-
             while (shows.Count > 0)
             {
                 for (int w = 0; w < WEEK; w++)
                 {
                     for (int s = 0; s < SLOTS; s++)
                     {
-                        Show show = Show.GetShowForSlot(shows, w, s);
+                        Show show = Show.GetShowForSlot(shows, w, s + 9);
                         if (show != null)
                         {
-                            Schedule[w, s] = Show.GetShowForSlot(shows, w, s);
-
+                            Schedule[w, s] = show;
                         }
-                        else
-                            timeoutCount++;
                     }
                 }
-                if (timeoutCount >= WEEK * SLOTS)
-                    hasConflict = true; // have list added to generated schedule for manual scheduling
-                else timeoutCount = 0;
+                CheckForNoSlots();
             }
+        }
 
-            // Open generated schedule form
-
+        /// <summary>
+        /// Moves any shows with the NoSlot flag to conficts list from shows list
+        /// </summary>
+        public void CheckForNoSlots()
+        {
+            for (int i = 0; i < shows.Count;)
+            {
+                if (shows[i].NoSlot)
+                {
+                    hasConflict = true;
+                    conflicts.Add(shows[i]);
+                    shows.RemoveAt(i);
+                }
+                else i++;
+            }
         }
 
         /// <summary>
@@ -82,7 +91,8 @@ namespace ShowScheduler
                 { new Show("test7", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null }
             };
 
-            HTMLSchedule html = new HTMLSchedule(s, false);
+            Generate();
+            HTMLSchedule html = new HTMLSchedule(Schedule, hasConflict, conflicts);
             html.OutputResults();
         }
 

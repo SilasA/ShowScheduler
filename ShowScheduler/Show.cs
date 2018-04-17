@@ -8,6 +8,17 @@ namespace ShowScheduler
     /// </summary>
     public class Show
     {
+        public static readonly List<string> Week = new List<string>()
+        {
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
+        };
+
         /// <summary>
         /// If the show is a 2 hour show
         /// </summary>
@@ -22,6 +33,11 @@ namespace ShowScheduler
         /// Parent show if this is a dummy
         /// </summary>
         public Show Parent { get; private set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool NoSlot { get; private set; }
 
         /// <summary>
         /// Title of the Show
@@ -88,8 +104,13 @@ namespace ShowScheduler
         /// <summary>
         /// 
         /// </summary>
-        public void NextPref() { prefSlot++; } // Handle rollover
-        
+        public void NextPref()
+        {
+            prefSlot++;
+            if (prefSlot >= times.Count)
+                NoSlot = true;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -122,6 +143,7 @@ namespace ShowScheduler
         /// <returns></returns>
         public int GetTime()
         {
+            if (NoSlot) return -1;
             if (prefSlot > 3) return -1;
             if (Dummy) return Parent.times[prefSlot];
             return times[prefSlot];
@@ -133,9 +155,19 @@ namespace ShowScheduler
         /// <returns></returns>
         public int GetDay()
         {
+            if (NoSlot) return -1;
             if (prefSlot > 3) return -1;
             if (Dummy) return Parent.days[prefSlot];
             return days[prefSlot];
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override String ToString()
+        {
+            return GetName() + "\n" + Week[GetDay()] + " " + GetTime() + ":00";
         }
 
         #endregion
@@ -146,7 +178,18 @@ namespace ShowScheduler
         /// <returns></returns>
         public static List<Show> GetShows()
         {
-            return new List<Show>();
+            return new List<Show>()
+            {
+                new Show("test1", new List<int>() { 12, 14, 10 }, new List<int>() { 0, 1, 4 }, 4, false),
+                new Show("test2", new List<int>() { 12, 14, 10 }, new List<int>() { 0, 1, 4 }, 2, false),
+                new Show("test8", new List<int>() { 12, 14, 10 }, new List<int>() { 0, 1, 4 }, 2, false),
+                new Show("test9", new List<int>() { 12, 14, 10 }, new List<int>() { 0, 1, 4 }, 2, false),
+                new Show("test3", new List<int>() { 22, 13, 9 }, new List<int>() { 0, 1, 4 }, 4, false),
+                new Show("test4", new List<int>() { 12, 20, 10 }, new List<int>() { 1, 2, 3 }, 1, false),
+                new Show("test5", new List<int>() { 19, 18, 10 }, new List<int>() { 0, 5, 3 }, 0, false),
+                new Show("test6", new List<int>() { 20, 15, 10 }, new List<int>() { 2, 4, 1 }, 9, false),
+                new Show("test7", new List<int>() { 15, 9, 10 }, new List<int>() { 0, 5, 6 }, 8, false)
+            };
         }
 
         /// <summary>
@@ -171,9 +214,10 @@ namespace ShowScheduler
             for (int i = 1; i < matches.Count; i++)
                 matches[i].NextPref();
 
-            shows.Remove(matches[0]);
+            if (matches.Count > 0)
+                shows.Remove(matches[0]);
 
-            return matches[0];
+            return matches.Count > 0 ? matches[0] : null;
         }
     }
 }

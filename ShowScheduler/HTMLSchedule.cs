@@ -14,6 +14,7 @@ namespace ShowScheduler
     {
         private Show[,] schedule;
         private bool hasConflict;
+        private List<Show> conflicting;
 
         private StringWriter html;
 
@@ -23,10 +24,11 @@ namespace ShowScheduler
         /// <param name="schedule"></param>
         /// <param name="hasConflict"></param>
         /// <param name="shows"></param>
-        public HTMLSchedule(Show[,] schedule, bool hasConflict)
+        public HTMLSchedule(Show[,] schedule, bool hasConflict, List<Show> conflicting)
         {
             this.schedule = schedule;
             this.hasConflict = hasConflict;
+            this.conflicting = conflicting;
 
             html = new StringWriter();
 
@@ -64,8 +66,7 @@ namespace ShowScheduler
                 h.RenderEndTag(); // Th
 
                 // Day headers
-                List<string> week = new List<string>() { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
-                foreach (string day in week)
+                foreach (string day in Show.Week)
                 {
                     h.RenderBeginTag(HtmlTextWriterTag.Th);
                     h.WriteLine(day);
@@ -94,6 +95,38 @@ namespace ShowScheduler
                 }
 
                 h.RenderEndTag(); // Table
+
+                // Conflicts
+                if (hasConflict)
+                {
+                    // <table style="width:100%">
+                    h.AddAttribute(HtmlTextWriterAttribute.Style, "width:20%;align:center;");
+                    h.AddAttribute(HtmlTextWriterAttribute.Border, "1");
+                    h.RenderBeginTag(HtmlTextWriterTag.Table);
+
+                    // Header
+                    h.RenderBeginTag(HtmlTextWriterTag.Tr);
+
+                    h.RenderBeginTag(HtmlTextWriterTag.Th);
+                    h.WriteLine("Conflicts");
+                    h.RenderEndTag(); // Th
+
+                    h.RenderEndTag(); // Tr
+
+                    foreach (Show s in conflicting)
+                    {
+                        h.RenderBeginTag(HtmlTextWriterTag.Tr);
+
+                        h.AddAttribute(HtmlTextWriterAttribute.Align, "center");
+                        h.RenderBeginTag(HtmlTextWriterTag.Td);
+                        h.WriteLine(s.GetName());
+                        h.RenderEndTag(); // Th
+
+                        h.RenderEndTag(); // Tr
+                    }
+
+                    h.RenderEndTag(); // Table
+                }
             }
         }
     }
