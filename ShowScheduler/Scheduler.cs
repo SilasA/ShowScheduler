@@ -31,7 +31,7 @@ namespace ShowScheduler
             // 1 - 14 are time - 9 = idx (first slot is 10:00)
             Schedule = new Show[7, 15]; // col x row
 
-            shows = Show.getShows();
+            shows = Show.GetShows();
         }
 
         /// <summary>
@@ -47,10 +47,10 @@ namespace ShowScheduler
                 {
                     for (int s = 0; s < SLOTS; s++)
                     {
-                        Show show = Show.getShowForSlot(shows, w, s);
+                        Show show = Show.GetShowForSlot(shows, w, s);
                         if (show != null)
                         {
-                            Schedule[w, s] = Show.getShowForSlot(shows, w, s);
+                            Schedule[w, s] = Show.GetShowForSlot(shows, w, s);
 
                         }
                         else
@@ -82,7 +82,8 @@ namespace ShowScheduler
                 { new Show("test7", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null }
             };
 
-            new Schedule(s, true, new List<Show>() { new Show("test8", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 1, false) }).Show();
+            HTMLSchedule html = new HTMLSchedule(s, false);
+            html.OutputResults();
         }
 
         /// <summary>
@@ -93,7 +94,7 @@ namespace ShowScheduler
         /// <returns></returns>
         private int[] getSlot(int pref, Show show)
         {
-            return new int[] { show.getTime() - 9, show.getDay() };
+            return new int[] { show.GetTime() - 9, show.GetDay() };
         }
     }
 }

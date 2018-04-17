@@ -88,19 +88,19 @@ namespace ShowScheduler
         /// <summary>
         /// 
         /// </summary>
-        public void nextPref() { prefSlot++; } // Handle rollover
+        public void NextPref() { prefSlot++; } // Handle rollover
         
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public int getPrefSlot() { return prefSlot; }
+        public int GetPrefSlot() { return prefSlot; }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public String getName()
+        public String GetName()
         {
             if (Dummy) return Parent.name;
             return name;
@@ -110,7 +110,7 @@ namespace ShowScheduler
         /// 
         /// </summary>
         /// <returns></returns>
-        public int getTenure()
+        public int GetTenure()
         {
             if (Dummy) return Parent.tenure;
             return tenure;
@@ -120,7 +120,7 @@ namespace ShowScheduler
         /// 
         /// </summary>
         /// <returns></returns>
-        public int getTime()
+        public int GetTime()
         {
             if (prefSlot > 3) return -1;
             if (Dummy) return Parent.times[prefSlot];
@@ -131,7 +131,7 @@ namespace ShowScheduler
         /// 
         /// </summary>
         /// <returns></returns>
-        public int getDay()
+        public int GetDay()
         {
             if (prefSlot > 3) return -1;
             if (Dummy) return Parent.days[prefSlot];
@@ -144,7 +144,7 @@ namespace ShowScheduler
         /// 
         /// </summary>
         /// <returns></returns>
-        public static List<Show> getShows()
+        public static List<Show> GetShows()
         {
             return new List<Show>();
         }
@@ -156,20 +156,20 @@ namespace ShowScheduler
         /// <param name="day"></param>
         /// <param name="slot"></param>
         /// <returns></returns>
-        public static Show getShowForSlot(List<Show> shows, int day, int slot)
+        public static Show GetShowForSlot(List<Show> shows, int day, int slot)
         {
             List<Show> matches = new List<Show>();
             foreach (Show s in shows)
             {
-                if (s.getDay() == day && s.getTime() == slot)
+                if (s.GetDay() == day && s.GetTime() == slot)
                 {
                     matches.Add(s);
                 }
             }
-            matches.Sort((Show x, Show y) => y.getTenure() - x.getTenure());
+            matches.Sort((Show x, Show y) => y.GetTenure() - x.GetTenure());
 
             for (int i = 1; i < matches.Count; i++)
-                matches[i].nextPref();
+                matches[i].NextPref();
 
             shows.Remove(matches[0]);
 
