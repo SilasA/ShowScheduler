@@ -145,7 +145,7 @@ namespace ShowScheduler
         {
             if (NoSlot) return -1;
             if (prefSlot > 3) return -1;
-            if (Dummy) return Parent.times[prefSlot];
+            if (Dummy) return Parent.times[prefSlot] + 1;
             return times[prefSlot];
         }
 
@@ -167,7 +167,7 @@ namespace ShowScheduler
         /// <returns></returns>
         public override String ToString()
         {
-            return GetName() + "\n" + Week[GetDay()] + " " + GetTime() + ":00";
+            return GetName() + "\n " + Week[GetDay()] + " " + GetTime() + ":00";
         }
 
         #endregion
@@ -178,17 +178,19 @@ namespace ShowScheduler
         /// <returns></returns>
         public static List<Show> GetShows()
         {
+            Show s = new Show("test2", new List<int>() { 12, 14, 10 }, new List<int>() { 0, 1, 4 }, 2, false);
+
             return new List<Show>()
             {
                 new Show("test1", new List<int>() { 12, 14, 10 }, new List<int>() { 0, 1, 4 }, 4, false),
-                new Show("test2", new List<int>() { 12, 14, 10 }, new List<int>() { 0, 1, 4 }, 2, false),
+                s, new Show(s),
                 new Show("test8", new List<int>() { 12, 14, 10 }, new List<int>() { 0, 1, 4 }, 2, false),
                 new Show("test9", new List<int>() { 12, 14, 10 }, new List<int>() { 0, 1, 4 }, 2, false),
                 new Show("test3", new List<int>() { 22, 13, 9 }, new List<int>() { 0, 1, 4 }, 4, false),
                 new Show("test4", new List<int>() { 12, 20, 10 }, new List<int>() { 1, 2, 3 }, 1, false),
                 new Show("test5", new List<int>() { 19, 18, 10 }, new List<int>() { 0, 5, 3 }, 0, false),
                 new Show("test6", new List<int>() { 20, 15, 10 }, new List<int>() { 2, 4, 1 }, 9, false),
-                new Show("test7", new List<int>() { 15, 9, 10 }, new List<int>() { 0, 5, 6 }, 8, false)
+                new Show("test7", new List<int>() { 0, 9, 10 }, new List<int>() { 0, 5, 6 }, 8, false)
             };
         }
 
@@ -199,7 +201,7 @@ namespace ShowScheduler
         /// <param name="day"></param>
         /// <param name="slot"></param>
         /// <returns></returns>
-        public static Show GetShowForSlot(List<Show> shows, int day, int slot)
+        public static Show GetShowForSlot(List<Show> shows, int day, int slot, bool twoHr)
         {
             List<Show> matches = new List<Show>();
             foreach (Show s in shows)
@@ -209,13 +211,20 @@ namespace ShowScheduler
                     matches.Add(s);
                 }
             }
-            matches.Sort((Show x, Show y) => y.GetTenure() - x.GetTenure());
+            if (!twoHr)
+                matches.Sort((Show x, Show y) => y.GetTenure() - x.GetTenure());
 
             for (int i = 1; i < matches.Count; i++)
                 matches[i].NextPref();
 
             if (matches.Count > 0)
                 shows.Remove(matches[0]);
+
+            for (int i = 0; i < matches.Count; i++)
+            {
+                if (twoHr && matches[i].Dummy && matches[i].GetDay() == day && matches[i].GetTime() == slot)
+                    return matches[i];
+            }
 
             return matches.Count > 0 ? matches[0] : null;
         }

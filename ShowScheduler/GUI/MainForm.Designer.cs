@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.showList = new System.Windows.Forms.ListBox();
             this.showListLabel = new System.Windows.Forms.Label();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
@@ -37,8 +38,13 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.tutorialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.button1 = new System.Windows.Forms.Button();
+            this.GenerateBtn = new System.Windows.Forms.Button();
+            this.GetShowsBtn = new System.Windows.Forms.Button();
+            this.configGroupBox = new System.Windows.Forms.GroupBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.cfgTenureCheck = new System.Windows.Forms.CheckBox();
             this.menuStrip.SuspendLayout();
+            this.configGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // showList
@@ -65,7 +71,7 @@
             this.aboutToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(561, 24);
+            this.menuStrip.Size = new System.Drawing.Size(425, 24);
             this.menuStrip.TabIndex = 2;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -115,22 +121,59 @@
             this.tutorialToolStripMenuItem.Text = "Tutorial";
             this.tutorialToolStripMenuItem.Click += new System.EventHandler(this.tutorialToolStripMenuItem_Click);
             // 
-            // button1
+            // GenerateBtn
             // 
-            this.button1.Location = new System.Drawing.Point(383, 174);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.GenerateBtn.Location = new System.Drawing.Point(307, 73);
+            this.GenerateBtn.Name = "GenerateBtn";
+            this.GenerateBtn.Size = new System.Drawing.Size(106, 37);
+            this.GenerateBtn.TabIndex = 3;
+            this.GenerateBtn.Text = "Generate Schedule";
+            this.GenerateBtn.UseVisualStyleBackColor = true;
+            this.GenerateBtn.Click += new System.EventHandler(this.GenerateBtn_Click);
+            // 
+            // GetShowsBtn
+            // 
+            this.GetShowsBtn.Location = new System.Drawing.Point(307, 40);
+            this.GetShowsBtn.Name = "GetShowsBtn";
+            this.GetShowsBtn.Size = new System.Drawing.Size(106, 27);
+            this.GetShowsBtn.TabIndex = 4;
+            this.GetShowsBtn.Text = "Get Shows";
+            this.GetShowsBtn.UseVisualStyleBackColor = true;
+            this.GetShowsBtn.Click += new System.EventHandler(this.GetShowsBtn_Click);
+            // 
+            // configGroupBox
+            // 
+            this.configGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.configGroupBox.AutoSize = true;
+            this.configGroupBox.Controls.Add(this.cfgTenureCheck);
+            this.configGroupBox.Location = new System.Drawing.Point(307, 117);
+            this.configGroupBox.Name = "configGroupBox";
+            this.configGroupBox.Size = new System.Drawing.Size(106, 153);
+            this.configGroupBox.TabIndex = 5;
+            this.configGroupBox.TabStop = false;
+            this.configGroupBox.Text = "configGroup";
+            // 
+            // cfgTenureCheck
+            // 
+            this.cfgTenureCheck.AutoSize = true;
+            this.cfgTenureCheck.Location = new System.Drawing.Point(7, 20);
+            this.cfgTenureCheck.Name = "cfgTenureCheck";
+            this.cfgTenureCheck.Size = new System.Drawing.Size(88, 17);
+            this.cfgTenureCheck.TabIndex = 0;
+            this.cfgTenureCheck.Text = "Use Tenure?";
+            this.toolTip1.SetToolTip(this.cfgTenureCheck, "Consider show tenure when scheduling");
+            this.cfgTenureCheck.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(561, 448);
-            this.Controls.Add(this.button1);
+            this.ClientSize = new System.Drawing.Size(425, 448);
+            this.Controls.Add(this.configGroupBox);
+            this.Controls.Add(this.GetShowsBtn);
+            this.Controls.Add(this.GenerateBtn);
             this.Controls.Add(this.showListLabel);
             this.Controls.Add(this.showList);
             this.Controls.Add(this.menuStrip);
@@ -138,6 +181,8 @@
             this.Text = "Show Scheduler";
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
+            this.configGroupBox.ResumeLayout(false);
+            this.configGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -154,7 +199,11 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem tutorialToolStripMenuItem;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button GenerateBtn;
+        private System.Windows.Forms.Button GetShowsBtn;
+        private System.Windows.Forms.GroupBox configGroupBox;
+        private System.Windows.Forms.CheckBox cfgTenureCheck;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 

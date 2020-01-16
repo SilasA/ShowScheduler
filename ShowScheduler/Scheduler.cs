@@ -47,9 +47,17 @@ namespace ShowScheduler
                 {
                     for (int s = 0; s < SLOTS; s++)
                     {
-                        Show show = Show.GetShowForSlot(shows, w, s + 9);
+                        Show show = Show.GetShowForSlot(shows, w, s + 9, false);
+                        Show show2 = null;
+
                         if (show != null)
                         {
+                            if (show.TwoHour)
+                            {
+                                show2 = Show.GetShowForSlot(shows, w, s + 10, true);
+                                Schedule[w, s + 1] = show2;
+                            }
+
                             Schedule[w, s] = show;
                         }
                     }
@@ -94,6 +102,15 @@ namespace ShowScheduler
             Generate();
             HTMLSchedule html = new HTMLSchedule(Schedule, hasConflict, conflicts);
             html.OutputResults();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public List<Show> GetShows()
+        {
+            return shows;
         }
 
         /// <summary>

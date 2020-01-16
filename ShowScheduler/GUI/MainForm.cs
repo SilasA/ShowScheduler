@@ -26,7 +26,7 @@ namespace ShowScheduler
 
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            Application.Exit();
         }
 
         private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -39,7 +39,12 @@ namespace ShowScheduler
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void GetShowsBtn_Click(object sender, EventArgs e)
+        {
+            showList.DataSource = scheduler.GetShows();
+        }
+
+        private void GenerateBtn_Click(object sender, EventArgs e)
         {
             scheduler.ShowGenerated();
         }
