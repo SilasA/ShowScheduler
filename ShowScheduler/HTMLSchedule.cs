@@ -9,9 +9,9 @@ namespace ShowScheduler
     /// </summary>
     class HTMLSchedule
     {
-        private Show[,] schedule;
-        private bool hasConflict;
+        private List<Show> schedule;
         private List<Show> conflicting;
+        private List<Show> issues;
 
         private StringWriter html;
 
@@ -21,11 +21,11 @@ namespace ShowScheduler
         /// <param name="schedule"></param>
         /// <param name="hasConflict"></param>
         /// <param name="shows"></param>
-        public HTMLSchedule(Show[,] schedule, bool hasConflict, List<Show> conflicting)
+        public HTMLSchedule(List<Show> schedule, List<Show> conflicting, List<Show> issues)
         {
             this.schedule = schedule;
-            this.hasConflict = hasConflict;
             this.conflicting = conflicting;
+            this.issues = issues;
 
             html = new StringWriter();
 
@@ -72,20 +72,34 @@ namespace ShowScheduler
 
                 h.RenderEndTag(); // Tr
 
-                for (int r = 0; r < schedule.GetLength(1); r++)
+                for (int r = Scheduler.SLOT_START; r <= Scheduler.CUTOFF; r++)
                 {
                     h.RenderBeginTag(HtmlTextWriterTag.Tr);
                     h.RenderBeginTag(HtmlTextWriterTag.Td);
-                    if (r == 0)
+                    if (r == 7)
                         h.WriteLine("Morning Slot");
                     else
-                        h.WriteLine((r + 9) + ":00");
+                        h.WriteLine(r % 24 + ":00");
                     h.RenderEndTag(); // Td
-                    for (int c = 0; c < schedule.GetLength(0); c++)
+                    for (int c = 0; c < Scheduler.WEEK; c++)
                     {
+                        if (schedule.Find(show => show.Day == c && show.StartTime == r - 1 && show.TwoHour) != null)
+                            continue;
+                        Show s = schedule.Find(show => show.Day == c && show.StartTime == r);
+                        if (s == null)
+                        {
+                            h.RenderBeginTag(HtmlTextWriterTag.Td);
+                            h.RenderEndTag(); // Td
+                            continue;
+                        }
+
+                        
+
+
                         h.AddAttribute(HtmlTextWriterAttribute.Align, "center");
+                        h.AddAttribute(HtmlTextWriterAttribute.Rowspan, s.TwoHour ? "2" : "1");
                         h.RenderBeginTag(HtmlTextWriterTag.Td);
-                        h.WriteLine(schedule[c, r]?.GetName());
+                        h.WriteLine(s.Name);
                         h.RenderEndTag(); // Td
                     }
                     h.RenderEndTag(); // Tr
@@ -93,8 +107,8 @@ namespace ShowScheduler
 
                 h.RenderEndTag(); // Table
 
-                // Conflicts
-                if (hasConflict)
+                // Conflicts or Issues
+                if (conflicting.Count > 0 || issues.Count > 0)
                 {
                     // <table style="width:100%">
                     h.AddAttribute(HtmlTextWriterAttribute.Style, "width:20%;align:center;");
@@ -105,7 +119,7 @@ namespace ShowScheduler
                     h.RenderBeginTag(HtmlTextWriterTag.Tr);
 
                     h.RenderBeginTag(HtmlTextWriterTag.Th);
-                    h.WriteLine("Conflicts");
+                    h.WriteLine("Conflicts/Issues");
                     h.RenderEndTag(); // Th
 
                     h.RenderEndTag(); // Tr
@@ -116,7 +130,19 @@ namespace ShowScheduler
 
                         h.AddAttribute(HtmlTextWriterAttribute.Align, "center");
                         h.RenderBeginTag(HtmlTextWriterTag.Td);
-                        h.WriteLine(s.GetName());
+                        h.WriteLine(s.Name + "\n" + s.IssueReason);
+                        h.RenderEndTag(); // Th
+
+                        h.RenderEndTag(); // Tr
+                    }
+
+                    foreach (Show s in issues)
+                    {
+                        h.RenderBeginTag(HtmlTextWriterTag.Tr);
+
+                        h.AddAttribute(HtmlTextWriterAttribute.Align, "center");
+                        h.RenderBeginTag(HtmlTextWriterTag.Td);
+                        h.WriteLine(s.Name + "\n" + s.IssueReason);
                         h.RenderEndTag(); // Th
 
                         h.RenderEndTag(); // Tr

@@ -41,8 +41,8 @@
             this.GenerateBtn = new System.Windows.Forms.Button();
             this.GetShowsBtn = new System.Windows.Forms.Button();
             this.configGroupBox = new System.Windows.Forms.GroupBox();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.cfgTenureCheck = new System.Windows.Forms.CheckBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.menuStrip.SuspendLayout();
             this.configGroupBox.SuspendLayout();
             this.SuspendLayout();
@@ -158,6 +158,8 @@
             // cfgTenureCheck
             // 
             this.cfgTenureCheck.AutoSize = true;
+            this.cfgTenureCheck.Checked = true;
+            this.cfgTenureCheck.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cfgTenureCheck.Location = new System.Drawing.Point(7, 20);
             this.cfgTenureCheck.Name = "cfgTenureCheck";
             this.cfgTenureCheck.Size = new System.Drawing.Size(88, 17);

@@ -13,115 +13,108 @@ namespace ShowScheduler
     class Scheduler
     {
         public const int WEEK = 7;
-        public const int SLOTS = 15;
+        public const int SLOT_START = 7;
+        public const int SLOT_END = 23;
+        public const int CUTOFF = 24; // Oof
 
-        public Show[,] Schedule { get; private set; }
+        public List<Show> Schedule { get; private set; }
+        private List<Show> conflicts;
+        private List<Show> issues;
 
         private List<Show> shows;
-        private List<Show> conflicts;
 
-        private bool hasConflict = false;
+        public bool Generated { get; private set; }
+        public bool HasConflicts { get; private set; }
+        public bool HasIssues { get; private set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public Scheduler()
         {
-            // 14 hours a day
-            // 0 = morning slot
-            // 1 - 14 are time - 9 = idx (first slot is 10:00)
-            Schedule = new Show[7, 15]; // col x row
-
-            shows = Show.GetShows();
             conflicts = new List<Show>();
+            issues = new List<Show>();
+            Schedule = new List<Show>();
         }
 
-        /// <summary>
-        /// TODO: Needs to run asynchronously
-        /// </summary>
-        public void Generate()
+        public List<Show> FetchShows()
         {
-            while (shows.Count > 0)
+            shows = new List<Show>()
             {
-                for (int w = 0; w < WEEK; w++)
-                {
-                    for (int s = 0; s < SLOTS; s++)
-                    {
-                        Show show = Show.GetShowForSlot(shows, w, s + 9, false);
-                        Show show2 = null;
-
-                        if (show != null)
-                        {
-                            if (show.TwoHour)
-                            {
-                                show2 = Show.GetShowForSlot(shows, w, s + 10, true);
-                                Schedule[w, s + 1] = show2;
-                            }
-
-                            Schedule[w, s] = show;
-                        }
-                    }
-                }
-                CheckForNoSlots();
-            }
-        }
-
-        /// <summary>
-        /// Moves any shows with the NoSlot flag to conficts list from shows list
-        /// </summary>
-        public void CheckForNoSlots()
-        {
-            for (int i = 0; i < shows.Count;)
-            {
-                if (shows[i].NoSlot)
-                {
-                    hasConflict = true;
-                    conflicts.Add(shows[i]);
-                    shows.RemoveAt(i);
-                }
-                else i++;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void ShowGenerated()
-        {
-            Show[,] s = new Show[7, 15]
-            {
-                { new Show("test1", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { new Show("test2", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { new Show("test3", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { new Show("test4", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { new Show("test5", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { new Show("test6", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { new Show("test7", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null }
+                new Show("test1", new List<int>() { 12, 14, 10 }, new List<int>() { 0, 1, 4 }, 2, true),
+                new Show("test2", new List<int>() { 13, 14, 10 }, new List<int>() { 1, 1, 5 }, 4, false),
+                new Show("test3", new List<int>() { 12, 14, 10 }, new List<int>() { 3, 1, 3 }, 4, false),
+                new Show("test4", new List<int>() { 12, 14, 10 }, new List<int>() { 0, 1, 4 }, 2, true),
+                new Show("test5", new List<int>() { 12, 14, 10 }, new List<int>() { 1, 1, 6 }, 1, false),
+                new Show("test6", new List<int>() { 7, 14, 10 }, new List<int>() { 6, 1, 4 }, 4, true),
+                new Show("test7", new List<int>() { 12, 14, 10 }, new List<int>() { 3, 1, 2 }, 6, false),
+                new Show("test8", new List<int>() { 22, 14, 10 }, new List<int>() { 0, 1, 4 }, 0, true),
+                new Show("test9", new List<int>() { 23, 23, 23 }, new List<int>() { 0, 1, 4 }, 1, true),
             };
-
-            Generate();
-            HTMLSchedule html = new HTMLSchedule(Schedule, hasConflict, conflicts);
-            html.OutputResults();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public List<Show> GetShows()
-        {
             return shows;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pref"></param>
-        /// <param name="show"></param>
-        /// <returns></returns>
-        private int[] getSlot(int pref, Show show)
+        public void Generate(bool useTenure)
         {
-            return new int[] { show.GetTime() - 9, show.GetDay() };
+            if (useTenure)
+                GenerateWithTenure();
+            else
+                GenerateWithoutTenure();
+
+            HTMLSchedule html = new HTMLSchedule(Schedule, conflicts, issues);
+            html.OutputResults();
+        }
+
+        private void GenerateWithTenure()
+        {
+            shows.Sort((s1, s2) => s2.Tenure - s1.Tenure);
+
+            while (shows.Count > 0)
+            {
+                for (int i = 0; i < shows.Count; i++)
+                {
+                    if (VerifyPreferences(shows[i]))
+                    {
+                        if (Schedule.Find(show => (
+                            show.Day == shows[i].Day &&
+                            show.StartTime >= shows[i].StartTime &&
+                            show.EndTime <= shows[i].EndTime)) == null)
+                        {
+                            Schedule.Add(shows[i]);
+                            shows.RemoveAt(i);
+                            i--; // I have no excuses
+                        }
+                        else
+                            shows[i].CurrentPreference++;
+                    }
+                    else if (shows[i].CurrentPreference >= 3)
+                    {
+                        HasConflicts = true;
+                        shows[i].IssueReason = "No preferred times fit in the schedule.";
+                        conflicts.Add(shows[i]);
+                        shows.RemoveAt(i);
+                        i--; // I have no excuses
+                    }
+                    else
+                    {
+                        HasIssues = true;
+                        shows[i].IssueReason = "Issue: Likely invalid time or day";
+                        issues.Add(shows[i]);
+                        shows.RemoveAt(i);
+                        i--; // I have no excuses
+                    }
+                }
+            }
+        }
+
+        private void GenerateWithoutTenure()
+        {
+
+        }
+
+        private bool VerifyPreferences(Show show)
+        {
+            return show.CurrentPreference < 3 &&
+                show.Day >= 0 && show.Day < WEEK &&
+                show.StartTime >= SLOT_START && show.StartTime <= SLOT_END &&
+                show.EndTime >= SLOT_START && show.EndTime <= SLOT_END;
         }
     }
 }
