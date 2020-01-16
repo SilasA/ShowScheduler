@@ -9,6 +9,17 @@ namespace ShowScheduler
     /// </summary>
     public class Show
     {
+        public static List<string> Week = new List<string>()
+        {
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
+        };
+
         public string Name { get; private set; }
         public List<int> Times { get; private set; }
         public List<int> Days { get; private set; }

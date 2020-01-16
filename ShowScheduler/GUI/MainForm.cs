@@ -41,12 +41,12 @@ namespace ShowScheduler
 
         private void GetShowsBtn_Click(object sender, EventArgs e)
         {
-            showList.DataSource = scheduler.GetShows();
+            showList.DataSource = scheduler.FetchShows();
         }
 
         private void GenerateBtn_Click(object sender, EventArgs e)
         {
-            scheduler.ShowGenerated();
+            scheduler.Generate(cfgTenureCheck.Checked);
         }
     }
 }

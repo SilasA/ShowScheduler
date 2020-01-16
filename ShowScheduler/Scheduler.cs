@@ -18,10 +18,10 @@ namespace ShowScheduler
         public const int CUTOFF = 24; // Oof
 
         public List<Show> Schedule { get; private set; }
-
-        private List<Show> shows;
         private List<Show> conflicts;
         private List<Show> issues;
+
+        private List<Show> shows;
 
         public bool Generated { get; private set; }
         public bool HasConflicts { get; private set; }
@@ -29,24 +29,26 @@ namespace ShowScheduler
 
         public Scheduler()
         {
-
+            conflicts = new List<Show>();
+            issues = new List<Show>();
+            Schedule = new List<Show>();
         }
 
-        public void FetchShows()
+        public List<Show> FetchShows()
         {
-            Show[,] s = new Show[7, 15]
+            shows = new List<Show>()
             {
-                { new Show("test1", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { new Show("test2", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { new Show("test3", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { new Show("test4", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { new Show("test5", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { new Show("test6", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null },
-                { new Show("test7", new List<int>() { 12, 2, 10 }, new List<int>() { 0, 1, 4 }, 4, false), null, null, null, null, null, null, null, null, null, null, null, null, null, null }
+                new Show("test1", new List<int>() { 12, 14, 10 }, new List<int>() { 0, 1, 4 }, 2, true),
+                new Show("test2", new List<int>() { 13, 14, 10 }, new List<int>() { 1, 1, 5 }, 4, false),
+                new Show("test3", new List<int>() { 12, 14, 10 }, new List<int>() { 3, 1, 3 }, 4, false),
+                new Show("test4", new List<int>() { 12, 14, 10 }, new List<int>() { 0, 1, 4 }, 2, true),
+                new Show("test5", new List<int>() { 12, 14, 10 }, new List<int>() { 1, 1, 6 }, 1, false),
+                new Show("test6", new List<int>() { 7, 14, 10 }, new List<int>() { 6, 1, 4 }, 4, true),
+                new Show("test7", new List<int>() { 12, 14, 10 }, new List<int>() { 3, 1, 2 }, 6, false),
+                new Show("test8", new List<int>() { 22, 14, 10 }, new List<int>() { 0, 1, 4 }, 0, true),
+                new Show("test9", new List<int>() { 23, 23, 23 }, new List<int>() { 0, 1, 4 }, 1, true),
             };
-
-            Generate(true);
-            HTMLSchedule html = new HTMLSchedule(Schedule, HasConflicts, conflicts);
+            return shows;
         }
 
         public void Generate(bool useTenure)
@@ -55,11 +57,14 @@ namespace ShowScheduler
                 GenerateWithTenure();
             else
                 GenerateWithoutTenure();
+
+            HTMLSchedule html = new HTMLSchedule(Schedule, conflicts, issues);
+            html.OutputResults();
         }
 
         private void GenerateWithTenure()
         {
-            shows.OrderByDescending(show => show.Tenure);
+            shows.Sort((s1, s2) => s2.Tenure - s1.Tenure);
 
             while (shows.Count > 0)
             {
@@ -107,7 +112,7 @@ namespace ShowScheduler
         private bool VerifyPreferences(Show show)
         {
             return show.CurrentPreference < 3 &&
-                show.Day > 0 && show.Day <= WEEK &&
+                show.Day >= 0 && show.Day < WEEK &&
                 show.StartTime >= SLOT_START && show.StartTime <= SLOT_END &&
                 show.EndTime >= SLOT_START && show.EndTime <= SLOT_END;
         }
